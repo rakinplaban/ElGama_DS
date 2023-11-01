@@ -32,7 +32,7 @@ def generate_random_relative_prime(q):
         if math.gcd(k, q - 1) == 1:
             return k
 
-# Key generation for user A
+# Key generation for user sender
 # Key generation for user A
 def generate_public_keys(q):
     a = generate_primitive_root(q)
@@ -48,9 +48,9 @@ def generate_private_key(q):
 # Sign a message M
 def sign_message(message, private_key):
     q, a, XA = private_key  # Unpack the private key correctly
-    m = hash(message.encode('utf-8')) % (q - 1)
+    m = hash(message.encode('utf-8')) % (q - 1) #hashed message
     K = generate_random_relative_prime(q)
-    S1 = pow(a, K, q)
+    S1 = pow(a, K)%q
     K_inv = mod_inverse(K, q - 1)
     S2 = (K_inv * (m - XA * S1)) % (q - 1)
     return (S1, S2)
@@ -69,8 +69,8 @@ def verify_signature(message, signature, public_key):
     if not (1 <= S1 <= q - 1) or not (0 <= S2 <= q - 2):
         return False
     m = hash(message.encode('utf-8')) % (q - 1)
-    left = (pow(YA, S1, q) * pow(S1, S2, q)) % q
-    right = pow(a, m, q)
+    left = (pow(YA, S1) * pow(S1, S2)) % q
+    right = pow(a, m) % q
     return left == right
 
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     public_key = generate_public_keys(q)
     private_key = generate_private_key(q)
 
-    messages = ["Message1", "Message2", "Message3"]
+    messages = ["Message1", "Rael Kertia", "Dragon Ball"]
     signatures = []
 
     for message in messages:
